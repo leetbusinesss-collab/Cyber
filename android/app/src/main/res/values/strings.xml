@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Cyber-Realm Idle</string>
+    <string name="title_activity_main">Cyber-Realm Idle</string>
+    <string name="package_name">com.cyberrealm.cyberrealm</string>
+    <string name="custom_url_scheme">com.cyberrealm.cyberrealm</string>
+</resources>

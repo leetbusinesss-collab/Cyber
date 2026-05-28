@@ -1,0 +1,6 @@
+{
+  "name": "Cyber-Realm Idle",
+  "description": "Научно-фантастическая инкрементальная кликер-стратегия в стиле Realm Grinder. Развивайте сингулярность, выбирайте фракции и проводите квантовые исследования.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
