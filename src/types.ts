@@ -1,69 +1,67 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * Types representing the "Spot the Differences: Worlds" (Найди Отличия: Миры) game state.
  */
 
-export enum Faction {
-  NEUTRAL = "NEUTRAL",
-  SYNDICATE = "SYNDICATE", // Megacorporation - active clicking, quick bursts, credits
-  SINGULARITY_AI = "SINGULARITY_AI", // AI Singularity - deep idle, automated progression, nanobots
-  REBEL_NOMADS = "REBEL_NOMADS", // Cosmic Rebels - entropy, chaotic variables, temporal warp
+export type Category = "Cyberpunk" | "Fantasy" | "Cozy" | "Space" | "Island";
+
+export interface Difference {
+  id: string;
+  name: string;        // Name in Russian for the log/achievements
+  nameEn: string;      // Name in English
+  x: number;           // Target X coordinate (0 - 100 percent)
+  y: number;           // Target Y coordinate (0 - 100 percent)
+  radius: number;      // Tapping tolerance (0 - 100 percent)
+  description: string; // Description of difference for details
 }
 
-export interface Structure {
-  id: string;
-  name: string;
+export interface Level {
+  id: number;
+  title: string;
+  titleEn: string;
   description: string;
-  baseCost: number;
-  costMultiplier: number;
-  count: number;
-  baseProduction: number; // nano-energy per second
-  category: "nanotech" | "energy" | "data" | "space";
+  descriptionEn: string;
+  category: Category;
+  totalDifferences: number;
+  differences: Difference[];
+  difficulty: "Легко" | "Средне" | "Сложно";
+  difficultyEn: "Easy" | "Medium" | "Hard";
+}
+
+export interface UserLevelProgress {
+  levelId: number;
+  completed: boolean;
+  stars: number;         // 0 to 3
+  bestTime: number;      // in seconds
+  foundDifferenceIds: string[];
+}
+
+export interface GameSettings {
+  soundEnabled: boolean;
+  musicEnabled: boolean;
+  showTimer: boolean;
+  magnifierEnabled: boolean; // Enables the magnifying round lens
+  language: "ru" | "en";
+  vibrationEnabled: boolean; // For Android target vibration feedback
+}
+
+export interface PlayerProfile {
+  levelsProgress: Record<number, UserLevelProgress>;
+  hintsCount: number;
+  totalScore: number;
+  comboCount: number;
+  maxCombo: number;
+  lastActiveLevelId: number;
+  achievements: Achievement[];
+}
+
+export interface Achievement {
+  id: string;
+  title: string;
+  titleEn: string;
+  description: string;
+  descriptionEn: string;
+  unlocked: boolean;
   icon: string; // Lucide icon name
-}
-
-export interface Upgrade {
-  id: string;
-  name: string;
-  description: string;
-  cost: number;
-  currency: "energy" | "cores" | "faction_points";
-  factionLock?: Faction;
-  isUnlocked: boolean;
-  isPurchased: boolean;
-  effect: string; // Brief summary of effect, e.g. "X2 click", "+10% node production"
-}
-
-export interface Protocol {
-  id: string;
-  name: string;
-  description: string;
-  duration: number; // in seconds
-  cooldown: number; // in seconds
-  activeTimeLeft: number; // in seconds, > 0 if active
-  cooldownLeft: number; // in seconds
-  cost: number; // energy cost
-  factionLock?: Faction;
-  icon: string;
-}
-
-export interface GameStats {
-  totalClicks: number;
-  totalEnergyEarned: number;
-  totalCoresEarned: number;
-  timePlayed: number; // in seconds
-  timeThisTranscending: number; // in seconds
-  transcendCount: number;
-  clicksThisTranscending: number;
-}
-
-export interface GameState {
-  nanoEnergy: number;
-  singularityCores: number;
-  factionPoints: number;
-  currentFaction: Faction;
-  structures: Structure[];
-  upgrades: Upgrade[];
-  stats: GameStats;
-  lastTick: number; // Timestamp of last update for idle progression
+  progress: number;
+  maxProgress: number;
 }

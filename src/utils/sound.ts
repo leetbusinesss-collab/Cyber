@@ -20,6 +20,9 @@ function getAudioContext(): AudioContext | null {
   return new AudioContextClass();
 }
 
+/**
+ * Standard flat button/panel UI click sound
+ */
 export function playClickSound() {
   if (!soundEnabled) return;
   const ctx = getAudioContext();
@@ -29,117 +32,152 @@ export function playClickSound() {
   const gain = ctx.createGain();
 
   osc.type = "sine";
-  osc.frequency.setValueAtTime(1200, ctx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.1);
+  osc.frequency.setValueAtTime(1000, ctx.currentTime);
+  osc.frequency.linearRampToValueAtTime(400, ctx.currentTime + 0.08);
 
-  gain.gain.setValueAtTime(0.08, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+  gain.gain.setValueAtTime(0.04, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
 
   osc.connect(gain);
   gain.connect(ctx.destination);
 
   osc.start();
-  osc.stop(ctx.currentTime + 0.1);
+  osc.stop(ctx.currentTime + 0.08);
 }
 
-export function playBuySound() {
+/**
+ * Success/Spot found sound: A beautiful, sparkling high chime
+ */
+export function playCorrectSound() {
   if (!soundEnabled) return;
   const ctx = getAudioContext();
   if (!ctx) return;
 
   const now = ctx.currentTime;
-  const notes = [440, 554.37, 659.25, 880]; // A major arpeggio
-  notes.forEach((freq, idx) => {
+  // Sparkling arpeggio: C6, E6, G6, C7
+  const freqs = [1046.50, 1318.51, 1567.98, 2093.00];
+
+  freqs.forEach((freq, index) => {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 
-    osc.type = "triangle";
-    osc.frequency.setValueAtTime(freq, now + idx * 0.04);
-    
-    gain.gain.setValueAtTime(0.0, now + idx * 0.04);
-    gain.gain.linearRampToValueAtTime(0.05, now + idx * 0.04 + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.04 + 0.25);
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(freq, now + index * 0.03);
+
+    gain.gain.setValueAtTime(0, now + index * 0.03);
+    gain.gain.linearRampToValueAtTime(0.06, now + index * 0.03 + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.03 + 0.25);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
 
-    osc.start(now + idx * 0.04);
-    osc.stop(now + idx * 0.04 + 0.3);
+    osc.start(now + index * 0.03);
+    osc.stop(now + index * 0.03 + 0.3);
   });
 }
 
-export function playPrestigeSound() {
+/**
+ * Error/Incorrect click sound: A soft, low-pitched buzz
+ */
+export function playIncorrectSound() {
   if (!soundEnabled) return;
   const ctx = getAudioContext();
   if (!ctx) return;
 
   const now = ctx.currentTime;
-  
-  // High crystallization sweep
-  const sweepOsc = ctx.createOscillator();
-  const sweepGain = ctx.createGain();
-  sweepOsc.type = "sine";
-  sweepOsc.frequency.setValueAtTime(100, now);
-  sweepOsc.frequency.exponentialRampToValueAtTime(2500, now + 1.2);
-  sweepGain.gain.setValueAtTime(0.01, now);
-  sweepGain.gain.linearRampToValueAtTime(0.08, now + 0.6);
-  sweepGain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
-  
-  sweepOsc.connect(sweepGain);
-  sweepGain.connect(ctx.destination);
-  sweepOsc.start(now);
-  sweepOsc.stop(now + 1.25);
-
-  // Deep structural bass drop
-  const bassOsc = ctx.createOscillator();
-  const bassGain = ctx.createGain();
-  bassOsc.type = "sawtooth";
-  bassOsc.frequency.setValueAtTime(160, now);
-  bassOsc.frequency.exponentialRampToValueAtTime(40, now + 1.0);
-  bassGain.gain.setValueAtTime(0.12, now);
-  bassGain.gain.exponentialRampToValueAtTime(0.001, now + 1.05);
-
-  // Lowpass filter for warm sub bass
-  const filter = ctx.createBiquadFilter();
-  filter.type = "lowpass";
-  filter.frequency.setValueAtTime(300, now);
-
-  bassOsc.connect(filter);
-  filter.connect(bassGain);
-  bassGain.connect(ctx.destination);
-
-  bassOsc.start(now);
-  bassOsc.stop(now + 1.1);
-}
-
-export function playProtocolSound() {
-  if (!soundEnabled) return;
-  const ctx = getAudioContext();
-  if (!ctx) return;
-
-  const now = ctx.currentTime;
-  
-  // Cyber sweep sound
   const osc = ctx.createOscillator();
-  const filter = ctx.createBiquadFilter();
   const gain = ctx.createGain();
 
-  osc.type = "sawtooth";
-  osc.frequency.setValueAtTime(220, now);
-  osc.frequency.exponentialRampToValueAtTime(880, now + 0.45);
-
-  filter.type = "bandpass";
-  filter.frequency.setValueAtTime(400, now);
-  filter.frequency.exponentialRampToValueAtTime(2000, now + 0.45);
-  filter.Q.setValueAtTime(8, now);
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(160, now);
+  osc.frequency.setValueAtTime(120, now + 0.05);
 
   gain.gain.setValueAtTime(0.08, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
 
-  osc.connect(filter);
-  filter.connect(gain);
+  osc.connect(gain);
   gain.connect(ctx.destination);
 
   osc.start(now);
-  osc.stop(now + 0.55);
+  osc.stop(now + 0.16);
+}
+
+/**
+ * Miracle magical sound when hint is sprayed
+ */
+export function playHintSound() {
+  if (!soundEnabled) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  const now = ctx.currentTime;
+  const steps = 6;
+  
+  for (let i = 0; i < steps; i++) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const delay = i * 0.06;
+    const freq = 600 + (steps - i) * 250; // Descending magic scale
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(freq, now + delay);
+    
+    // Slight vibrato
+    osc.frequency.linearRampToValueAtTime(freq - 100, now + delay + 0.2);
+
+    gain.gain.setValueAtTime(0, now + delay);
+    gain.gain.linearRampToValueAtTime(0.04, now + delay + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.25);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now + delay);
+    osc.stop(now + delay + 0.3);
+  }
+}
+
+/**
+ * Magical level completion fanfare!
+ * A rich triumphant chord progression
+ */
+export function playLevelCompletionSound() {
+  if (!soundEnabled) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  const now = ctx.currentTime;
+
+  // Major chord progression (C major to F major to G major to C major)
+  const progressions = [
+    // Chord 1 (C Major): C4, E4, G4, C5 (at time 0.0)
+    { time: 0.0, notes: [261.63, 329.63, 392.00, 523.25], duration: 0.25 },
+    // Chord 2 (F Major): F4, A4, C5, F5 (at time 0.25)
+    { time: 0.25, notes: [349.23, 440.00, 523.25, 698.46], duration: 0.25 },
+    // Chord 3 (G Major): G4, B4, D5, G5 (at time 0.5)
+    { time: 0.5, notes: [392.00, 493.88, 587.33, 783.99], duration: 0.25 },
+    // Chord 4 (C Major triumphant ring!): E5, G5, C6 (at time 0.75)
+    { time: 0.75, notes: [659.25, 783.99, 1046.50], duration: 0.7 }
+  ];
+
+  progressions.forEach((prog) => {
+    prog.notes.forEach((freq) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      // Soft majestic brass (triangle wave)
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(freq, now + prog.time);
+
+      gain.gain.setValueAtTime(0, now + prog.time);
+      gain.gain.linearRampToValueAtTime(0.04, now + prog.time + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + prog.time + prog.duration);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now + prog.time);
+      osc.stop(now + prog.time + prog.duration);
+    });
+  });
 }

@@ -41,6 +41,30 @@ async function main() {
     console.log(`Created At:     ${run.created_at}`);
     console.log(`Web Link:       ${run.html_url}`);
 
+    if (run.conclusion === 'success') {
+      try {
+        const artifactsRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/runs/${run.id}/artifacts`, {
+          headers: {
+            'Authorization': `Bearer ${GITHUB_PAT}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'AI-Studio'
+          }
+        });
+        if (artifactsRes.ok) {
+          const artifactsData = await artifactsRes.json() as any;
+          const artifacts = artifactsData.artifacts || [];
+          if (artifacts.length > 0) {
+            console.log('\n--- 📦 READY-TO-INSTALL ANDROID APK PACKAGE ---');
+            for (const art of artifacts) {
+              console.log(`  Name:             ${art.name}`);
+              console.log(`  Package Size:     ${(art.size_in_bytes / (1024 * 1024)).toFixed(2)} MB`);
+              console.log(`  Browser Download Link: https://github.com/${owner}/${repo}/actions/runs/${run.id}`);
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
     if (run.conclusion === 'failure') {
       try {
         const jobsRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/runs/${run.id}/jobs`, {
